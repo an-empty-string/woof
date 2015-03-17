@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>wolfinator 3000</title>
+        <script src="https://code.jquery.com/jquery.min.js"></script>
+        <script src="http://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+        <script>
+            function update() {
+                $.get('/api/wolfiness.json').done(function(data) {
+                        var html = "";
+                        data.users.forEach(function(x) {
+                            html += "<tr><td>" + x[0] + "</td><td>" + x[1] + "</td></tr>";
+                        });
+                        $("#wolfiness").html(html);
+                }).fail(function() { $("#wolfiness").html("No game currently running."); });
+                setTimeout(update, 5000);
+            }
+        </script>
+    </head>
+    <body onload="update();">
+        <div class="container">
+            <h1>wolfinator 3000</h1>
+            <h2>alive people</h2>
+            <table class="table table-hover">
+                <thead>
+                   <tr><th>nickname</th><th>wolfiness</th></tr>
+               </thead>
+               <tbody id="wolfiness">
+               </tbody>
+            </table>
+        </div>
+    </body>
+</html>
