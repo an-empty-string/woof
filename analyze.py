@@ -50,13 +50,15 @@ def analyze():
             data[user] = {}
         for role in data[user]:
             confidences[role] = chisquare(data[user][role], probdict) * len(otherdata)
+        try:
+            wolfiness[user] = sum([confidences[role] for role in wolftest.wolf_roles if role in confidences]) / len([_ for _ in wolftest.wolf_roles if _ in confidences]) - (sum(confidences[role] for role in wolftest.village_roles if role in confidences)) / len([_ for _ in wolftest.village_roles if _ in confidences])
+        except:
+            wolfiness[user] = None
 
-        wolfiness[user] = sum([confidences[role] for role in wolftest.wolf_roles if role in confidences]) - (sum(confidences[role] for role in wolftest.village_roles if role in confidences))
+    min_wolfiness = min(filter(lambda k: k is not None, wolfiness.values()))
+    slope = 1 / (max(filter(lambda k: k is not None, wolfiness.values())) - min_wolfiness)
 
-    min_wolfiness = min(wolfiness.values())
-    slope = 1 / (max(wolfiness.values()) - min_wolfiness)
-
-    return sorted([(k[0], slope * (k[1] - min_wolfiness)) for k in wolfiness.items()], key=lambda k: -k[1])
+    return sorted([(k[0], slope * (k[1] - min_wolfiness)) if k[1] is not None else (k[0], -float('inf')) for k in wolfiness.items()], key=lambda k: -k[1])
 
 if __name__ == '__main__':
     import pprint
